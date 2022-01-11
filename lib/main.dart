@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:overlapping_panels/overlapping_panels.dart';
+import 'package:overlapping_panels_demo/data.dart';
 
 void main() {
   runApp(const MyApp());
@@ -14,7 +15,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
-        primarySwatch: Colors.green,
+        primarySwatch: Colors.blue,
       ),
       debugShowCheckedModeBanner: false,
       home: const MyHomePage(title: 'Flutter Demo Home Page'),
@@ -32,26 +33,103 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  Offset footerOffset = const Offset(0, 1);
+
   @override
   Widget build(BuildContext context) {
-    return OverlappingPanels(
-      left: Builder(builder: (context) {
-        return const LeftPage();
-      }),
-      right: Builder(
-        builder: (context) => const RightPage(),
-      ),
-      main: Builder(
-        builder: (context) {
-          return const MainPage();
-        },
-      ),
+    return Stack(
+      children: [
+        OverlappingPanels(
+          left: Builder(builder: (context) {
+            return const LeftPage();
+          }),
+          right: Builder(
+            builder: (context) => const RightPage(),
+          ),
+          main: Builder(
+            builder: (context) {
+              return const MainPage();
+            },
+          ),
+          onSideChange: (side) {
+            setState(() {
+              if (side == RevealSide.main) {
+                footerOffset = const Offset(0, 1);
+              } else if (side == RevealSide.left) {
+                footerOffset = const Offset(0, 0);
+              }
+            });
+          },
+        ),
+        Align(
+          child: AnimatedSlide(
+            duration: const Duration(milliseconds: 160),
+            offset: footerOffset,
+            child: SizedBox(
+              height: 90,
+              child: Material(
+                color: Colors.blue,
+                child: Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  child: Flex(
+                      direction: Axis.horizontal,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        IconButton(
+                          onPressed: () {},
+                          icon: const Icon(
+                            Icons.discord,
+                            color: Colors.white,
+                            size: 32,
+                          ),
+                        ),
+                        IconButton(
+                          onPressed: () {},
+                          icon: const Icon(
+                            Icons.person_pin,
+                            color: Colors.white54,
+                            size: 32,
+                          ),
+                        ),
+                        IconButton(
+                          onPressed: () {},
+                          icon: const Icon(
+                            Icons.search,
+                            color: Colors.white54,
+                            size: 32,
+                          ),
+                        ),
+                        IconButton(
+                          onPressed: () {},
+                          icon: const Icon(
+                            Icons.alternate_email,
+                            color: Colors.white54,
+                            size: 32,
+                          ),
+                        ),
+                        const Padding(
+                          padding: EdgeInsets.symmetric(vertical: 8),
+                          child: CircleAvatar(
+                            radius: 16,
+                            foregroundImage: NetworkImage(
+                                "https://avatars.githubusercontent.com/u/5024388?v=4"),
+                          ),
+                        ),
+                      ]),
+                ),
+              ),
+            ),
+          ),
+          alignment: Alignment.bottomCenter,
+        )
+      ],
     );
   }
 }
 
 class MainPage extends StatelessWidget {
-
   const MainPage({Key? key}) : super(key: key);
 
   @override
@@ -106,38 +184,37 @@ class MainPage extends StatelessWidget {
         ],
       ),
       body: ListView(
-        children: List.generate(
-            30,
-            (index) => ListTile(
-                  contentPadding: const EdgeInsets.all(16),
-                  leading: const CircleAvatar(
-                    foregroundImage: NetworkImage(
-                        "https://avatars.githubusercontent.com/u/5024388?v=4"),
+        children: [...chat, ...chat]
+            .map((chatEntry) => ListTile(
+                  contentPadding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
+                  leading: CircleAvatar(
+                    foregroundImage: NetworkImage(chatEntry['user']['avatar']),
                   ),
                   title: Row(
-                    children: const [
+                    children: [
                       Text(
-                        'notgr',
-                        style: TextStyle(fontWeight: FontWeight.bold),
+                        chatEntry['user']['name'],
+                        style: const TextStyle(fontWeight: FontWeight.bold),
                       ),
-                      SizedBox(
+                      const SizedBox(
                         width: 16,
                       ),
                       Text(
-                        'Today at 10:30 PM',
-                        style: TextStyle(color: Colors.grey, fontSize: 12),
+                        chatEntry["time"],
+                        style:
+                            const TextStyle(color: Colors.grey, fontSize: 12),
                       )
                     ],
                   ),
-                  subtitle: const Text(
-                    'Can we get some coffee beans tomorrow before breakfast time? Please huryy else I will die here',
-                    style: TextStyle(fontSize: 16),
+                  subtitle: Text(
+                    chatEntry['message'],
+                    style: const TextStyle(fontSize: 16),
                   ),
-                  onTap: () {
-                  },
-                  onLongPress: () {
-                  },
-                )),
+                  onTap: () {},
+                  onLongPress: () {},
+                ))
+            .toList(),
       ),
     );
   }
@@ -156,18 +233,17 @@ class LeftPage extends StatelessWidget {
             SizedBox(
               width: 70,
               child: ListView(
-                  children: List.generate(
-                      4,
-                      (index) => const Padding(
-                            padding: EdgeInsets.symmetric(
+                  children: servers
+                      .map((server) => Padding(
+                            padding: const EdgeInsets.symmetric(
                                 horizontal: 8, vertical: 4),
                             child: CircleAvatar(
+                              backgroundColor: Colors.white,
                               radius: 30,
-                              foregroundImage: NetworkImage(
-                                "https://avatars.githubusercontent.com/u/5024388?v=4",
-                              ),
+                              foregroundImage: NetworkImage(server),
                             ),
-                          ))),
+                          ))
+                      .toList()),
             ),
             Expanded(
               child: SafeArea(
@@ -210,47 +286,48 @@ class LeftPage extends StatelessWidget {
                           ),
                         ),
                         Expanded(
-                          child: ListView(
-                            children: [
-                              const Padding(
-                                padding: EdgeInsets.only(
-                                    top: 16, left: 16, right: 16),
-                                child: Text(
-                                  'TEXT CHANNELS',
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 12,
-                                      color: Colors.grey),
+                          child: Material(
+                            color: Colors.white,
+                            child: ListView(
+                              children: [
+                                const Padding(
+                                  padding: EdgeInsets.only(
+                                      top: 16, left: 16, right: 16),
+                                  child: Text(
+                                    'TEXT CHANNELS',
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 12,
+                                        color: Colors.grey),
+                                  ),
                                 ),
-                              ),
-                              ...["general", "resources", "standup"]
-                                  .map((channel) => ListTile(
-                                        leading: const Icon(Icons.tag),
-                                        horizontalTitleGap: 0,
-                                        title: Text(channel),
-                                        onTap: () {
-                                        },
-                                      )),
-                              const Padding(
-                                padding: EdgeInsets.only(
-                                    top: 16, left: 16, right: 16),
-                                child: Text(
-                                  'VOICE CHANNELS',
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 12,
-                                      color: Colors.grey),
+                                ...["general", "resources", "standup"]
+                                    .map((channel) => ListTile(
+                                          leading: const Icon(Icons.tag),
+                                          horizontalTitleGap: 0,
+                                          title: Text(channel),
+                                          onTap: () {},
+                                        )),
+                                const Padding(
+                                  padding: EdgeInsets.only(
+                                      top: 16, left: 16, right: 16),
+                                  child: Text(
+                                    'VOICE CHANNELS',
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 12,
+                                        color: Colors.grey),
+                                  ),
                                 ),
-                              ),
-                              ...["General", "support"]
-                                  .map((channel) => ListTile(
-                                        leading: const Icon(Icons.headphones),
-                                        horizontalTitleGap: 0,
-                                        title: Text(channel),
-                                        onTap: () {
-                                        },
-                                      ))
-                            ],
+                                ...["General", "support"]
+                                    .map((channel) => ListTile(
+                                          leading: const Icon(Icons.headphones),
+                                          horizontalTitleGap: 0,
+                                          title: Text(channel),
+                                          onTap: () {},
+                                        ))
+                              ],
+                            ),
                           ),
                         ),
                       ],
@@ -384,7 +461,9 @@ class RightPage extends StatelessWidget {
                             ],
                           ),
                         ),
-                        ListTile(
+                        Material(
+                          color: Colors.white,
+                          child: ListTile(
                             leading: Container(
                               child: const Icon(Icons.person_add_alt_1),
                               decoration: BoxDecoration(
@@ -392,36 +471,39 @@ class RightPage extends StatelessWidget {
                                   color: Colors.grey[200]),
                               padding: const EdgeInsets.all(7),
                             ),
-                            title: const Text("New Group DM")),
+                            title: const Text("New Group DM"),
+                            onTap: () {},
+                          ),
+                        ),
                         Expanded(
                           child: Container(
                             color: Colors.grey[100],
-                            child: ListView(
-                              children: [
-                                const Padding(
-                                  padding: EdgeInsets.only(
-                                      top: 16, left: 16, right: 16),
-                                  child: Text(
-                                    'MEMBERS - 2',
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 12,
-                                        color: Colors.grey),
+                            child: Material(
+                              child: ListView(
+                                children: [
+                                  const Padding(
+                                    padding: EdgeInsets.only(
+                                        top: 16, left: 16, right: 16),
+                                    child: Text(
+                                      'MEMBERS - 3',
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 12,
+                                          color: Colors.grey),
+                                    ),
                                   ),
-                                ),
-                                ...["notgr", "Mufasa"]
-                                    .map((channel) => ListTile(
-                                          leading: const CircleAvatar(
-                                              radius: 15,
-                                              foregroundImage: NetworkImage(
-                                                "https://avatars.githubusercontent.com/u/5024388?v=4",
-                                              )),
-                                          horizontalTitleGap: 0,
-                                          title: Text(channel),
-                                          onTap: () {
-                                          },
-                                        )),
-                              ],
+                                  ...users.map((user) => ListTile(
+                                        leading: CircleAvatar(
+                                            radius: 15,
+                                            foregroundImage: NetworkImage(
+                                              user["avatar"]!,
+                                            )),
+                                        horizontalTitleGap: 0,
+                                        title: Text(user["name"]!),
+                                        onTap: () {},
+                                      )),
+                                ],
+                              ),
                             ),
                           ),
                         ),
