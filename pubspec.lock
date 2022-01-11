@@ -105,9 +105,9 @@ packages:
   overlapping_panels:
     dependency: "direct main"
     description:
-      path: "../overlapping_panels"
-      relative: true
-    source: path
+      name: overlapping_panels
+      url: "https://pub.dartlang.org"
+    source: hosted
     version: "0.0.1"
   path:
     dependency: transitive
