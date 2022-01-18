@@ -80,7 +80,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         IconButton(
                           onPressed: () {},
                           icon: const Icon(
-                            Icons.discord,
+                            Icons.public,
                             color: Colors.white,
                             size: 32,
                           ),
@@ -149,7 +149,7 @@ class MainPage extends StatelessWidget {
                   Text('notgr')
                 ]),
                 const Text(
-                  'Playing Fornite Battle Royale',
+                  'Playing Fornite Creative',
                   style: TextStyle(color: Colors.white54, fontSize: 12),
                 )
               ],
@@ -159,26 +159,26 @@ class MainPage extends StatelessWidget {
         leading: IconButton(
           icon: const Icon(Icons.menu),
           onPressed: () {
-            OverlappingPanelsState.of(context)?.reveal(RevealSide.left);
+            OverlappingPanels.of(context)?.reveal(RevealSide.left);
           },
         ),
         actions: [
           IconButton(
             icon: const Icon(Icons.call),
             onPressed: () {
-              OverlappingPanelsState.of(context)?.reveal(RevealSide.right);
+              OverlappingPanels.of(context)?.reveal(RevealSide.right);
             },
           ),
           IconButton(
             icon: const Icon(Icons.camera_alt),
             onPressed: () {
-              OverlappingPanelsState.of(context)?.reveal(RevealSide.right);
+              OverlappingPanels.of(context)?.reveal(RevealSide.right);
             },
           ),
           IconButton(
             icon: const Icon(Icons.group),
             onPressed: () {
-              OverlappingPanelsState.of(context)?.reveal(RevealSide.right);
+              OverlappingPanels.of(context)?.reveal(RevealSide.right);
             },
           )
         ],
